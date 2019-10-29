@@ -14,6 +14,16 @@ class Students extends Model {
         sequelize
       }
     );
+
+    this.addHook('beforeSave', async student => {
+      student.weight = parseFloat(await student.weight.toFixed(3));
+      student.height = parseFloat(await student.height.toFixed(2));
+    });
+
+    this.addHook('beforeUpdate', async student => {
+      student.weight = parseFloat(await student.weight.toFixed(3));
+      student.height = parseFloat(await student.height.toFixed(2));
+    });
   }
 }
 
