@@ -1,10 +1,10 @@
 import * as Yup from 'yup';
-import Plans from '../models/Plans';
+import Plan from '../models/Plan';
 
 class PlanController {
   async index(req, res) {
     const { page = 1 } = req.query;
-    const plans = await Plans.findAll({
+    const plans = await Plan.findAll({
       order: ['duration'],
       limit: 20,
       offset: (page - 1) * 20
@@ -24,7 +24,7 @@ class PlanController {
       return res.status(400).json({ error: 'validation fails' });
     }
 
-    const checkPlans = await Plans.findOne({
+    const checkPlans = await Plan.findOne({
       where: { title: req.body.title }
     });
 
@@ -32,7 +32,7 @@ class PlanController {
       return res.status(400).json({ error: 'Plan alredy exists' });
     }
 
-    const { title, duration, price } = await Plans.create(req.body);
+    const { title, duration, price } = await Plan.create(req.body);
 
     return res.json({
       title,
@@ -53,14 +53,14 @@ class PlanController {
       return res.status(400).json({ error: 'validation fails' });
     }
 
-    const plan = await Plans.findByPk(req.body.id);
+    const plan = await Plan.findByPk(req.body.id);
 
     if (!plan)
       return res.status(400).json({ error: "This plan doesn't exist!" });
 
     const { title } = req.body;
     if (title && title !== plan.title) {
-      const invalidPlan = await Plans.findOne({ where: { title } });
+      const invalidPlan = await Plan.findOne({ where: { title } });
       if (invalidPlan)
         return res
           .status(400)
@@ -73,10 +73,11 @@ class PlanController {
   }
 
   async delete(req, res) {
-    const plans = await Plans.destroy({
+    const plans = await Plan.destroy({
       where: { id: req.params.id }
     });
-    if (!plans) return res.status(400).json({ error: 'Invalid id!' });
+    if (!plans)
+      return res.status(400).json({ error: 'This plan dosent exists!' });
 
     return res.json({ message: 'Plan deleted!' });
   }
