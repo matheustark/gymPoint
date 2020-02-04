@@ -2,6 +2,8 @@ import * as Yup from 'yup';
 
 import HelpOrder from '../models/HelpOrders';
 import Student from '../models/Student';
+import Queue from '../../lib/Queue';
+import AnswerMail from '../jobs/AnswerMail';
 
 class AnswerController {
   async store(req, res) {
@@ -35,6 +37,8 @@ class AnswerController {
       answer,
       answer_at: new Date()
     });
+
+    await Queue.add(AnswerMail.key, { helpOrder });
 
     return res.json(helpOrder);
   }
